@@ -12,7 +12,7 @@
       <parent link="base_link"/>
       <child link="base_rot"/>
       <origin xyz="0 0 0.05" rpy="0 0 0" />
-      <axis xyz="0 0 -1"/>
+      <axis xyz="0 0 1"/>
       <limit lower="-6.28" upper="6.28" />
     </joint>
 
@@ -28,9 +28,9 @@
       <joint name="shoulder_joint" type="revolute">
       <parent link="base_rot"/>
       <child link="arm1"/>
-      <origin xyz="0 0 0.07" rpy="0 0 0" />
+      <origin xyz="0 0 0.07" rpy="-1.57 0 0" />
       <axis xyz="1 0 0"/>
-      <limit lower="-1.57" upper="1.57" />
+      <limit lower="0" upper="3.14" />
     </joint>
 
     <link name="arm1">
@@ -45,9 +45,9 @@
     <joint name="elbow_joint" type="revolute">
       <parent link="arm1"/>
       <child link="arm2"/>
-      <origin xyz="0.08 0 0.5" rpy="0 0 0" />
-      <axis xyz="1 0 0"/>
-        <limit lower="-3.14" upper="3.14" />
+      <origin xyz="0.08 0 0.5" rpy="3.14 0 0" />
+      <axis xyz="-1 0 0"/>
+        <limit lower="-6.28" upper="6.28" />
     </joint>
     
     <link name="arm2">

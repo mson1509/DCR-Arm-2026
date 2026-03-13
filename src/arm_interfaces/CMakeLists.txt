@@ -10,7 +10,8 @@ find_package(ament_cmake REQUIRED)
 
 find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/MotorStat.msg"
+  "msg/MotorStat1.msg"
+  "msg/MotorStat2.msg"
   "msg/MotorMove.msg"
 )
 if(BUILD_TESTING)

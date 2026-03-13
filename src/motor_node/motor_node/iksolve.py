@@ -1,5 +1,6 @@
 import numpy as np
 import ikpy.chain
+from geometry_msgs.msg import Point
 
 class IKSolver:
     def __init__(self):
@@ -18,3 +19,18 @@ class IKSolver:
         joints_deg = np.degrees(joints_rad)
         joints_deg_round = np.round(joints_deg / 0.02) * 0.02
         return joints_deg_round[1:4]
+
+    def desolve(self, joints):
+        joints_rad = np.radians(joints)
+
+        full_joints = [0, joints_rad[0], joints_rad[1], joints_rad[2], 0]
+
+        T = self.chain.forward_kinematics(full_joints)
+
+        pos = Point()
+        pos.x = float(T[0, 3])
+        pos.y = float(T[1, 3])
+        pos.z = float(T[2, 3])
+
+        return pos
+

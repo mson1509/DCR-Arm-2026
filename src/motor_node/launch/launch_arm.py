@@ -21,12 +21,12 @@ def generate_launch_description():
         output='screen'
     ))
 
-    ld.add_action(Node(
-            package='motor_node',
-            executable='start_motor',
-            name='motor',
-            output='screen'
-    ))
+    # ld.add_action(Node(
+    #         package='motor_node',
+    #         executable='start_motor',
+    #         name='motor',
+    #         output='screen'
+    # ))
 
     # # Motor nodes (IDs 1 to 6)
     # for i in range(1, 7):
