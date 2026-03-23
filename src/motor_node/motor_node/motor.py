@@ -6,6 +6,37 @@ class Motor:
     def __init__(self):
         pass
 
+    def ee_set_spd(self, spd):
+        msg = Frame()
+        msg.id = 0x07
+        msg.dlc = 0x02
+        msg.data[0] = 0xA0
+        msg.data[1] = spd
+        return msg
+
+    def ee_set_pos(self, pos):
+        msg = Frame()
+        msg.id = 0x07
+        msg.dlc = 0x02
+        msg.data[0] = 0xA1
+        msg.data[1] = pos
+        return msg
+
+    def ee_laser(self):
+        msg = Frame()
+        msg.id = 0x07
+        msg.dlc = 0x02
+        msg.data[0] = 0xA2
+        msg.data[1] = 0x00
+        return msg
+
+    def clr_faults(self):
+        msg = Frame()
+        msg.id = 0x00
+        msg.dlc = 0x01
+        msg.data[0] = 0xAF
+        return msg
+
     def set_home(self, id):
         msg = Frame()
         msg.id = id

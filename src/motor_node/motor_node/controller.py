@@ -28,16 +28,19 @@ class Controller(Node):
         self.pos_goal = Point() #for Ik
         self.pos_current = Point()
 
+        self.ee_pos = 137 #137 is fully open, 105 is fully closed
+        self.last_ee_pos = 137
+
         #self.motor_move_publisher = self.create_publisher(MotorMove, '/motor_move', 15)
         #self.motor_stat1_subscriber = self.create_subscription(MotorStat1, 'motor_stat_1', self.motor_stat1_callback, 50)
-        self.joy_subscriber = self.create_subscription(Joy, '/joy', self.joy_callback, 30)
+        self.joy_subscriber = self.create_subscription(Joy, '/arm/joy', self.joy_callback, 30)
 
         self.stat_publisher_1 = self.create_publisher(MotorStat1, '/motor_stat_1', 15)
         self.stat_publisher_2 = self.create_publisher(MotorStat2, '/motor_stat_2', 15)
         timer_period = 1  # seconds
         self.stat_timer = self.create_timer(timer_period, self.stat_timer_callback)
 
-        for i in range (6):
+        for i in range (3):
             can_cmd = self.motor.set_home(i + 1)
             self.can_publisher.publish(can_cmd)
 
@@ -69,22 +72,38 @@ class Controller(Node):
                 self.get_logger().info(f"Byte frame is {can_cmd.data[1]}, {can_cmd.data[2]}, {can_cmd.data[3]}, {can_cmd.data[4]}")
                 self.can_publisher.publish(can_cmd) 
         elif (self.mode == 0):
-            spd_cmd[0] = joy_msg.axes[0] * 5
+            spd_cmd[0] = joy_msg.axes[0] * -5
             spd_cmd[1] = joy_msg.axes[1] * 5
             spd_cmd[2] = joy_msg.axes[4] * 5
             for i in range(3):
                 can_cmd = self.motor.speed_control(i + 1, spd_cmd[i])
                 self.can_publisher.publish(can_cmd)
         
-        spd_cmd[3] = joy_msg.axes[3] * 10 # Rx
-        spd_cmd[4] = joy_msg.axes[7] * 10 # Pad y
+        spd_cmd[3] = joy_msg.axes[3] * -10 # Rx
+        spd_cmd[4] = joy_msg.axes[7] * -10 # Pad y
         spd_cmd[5] = joy_msg.axes[6] * 10 # Pad x
         for i in range (3,6):
             can_cmd = self.motor.speed_control(i + 1, spd_cmd[i])
             self.can_publisher.publish(can_cmd)
         
-        #self.publish_motor_move()
+        if (joy_msg.buttons[1] == 1):
+            self.ee_pos = self.ee_pos + 2 # open with btn O
+        if (joy_msg.buttons[3] == 1):
+            self.ee_pos = self.ee_pos - 2 # close with btn SQUARE
+        self.ee_pos = max(105, min(self.ee_pos, 137))
+        if (abs(self.ee_pos - self.last_ee_pos) >= 4):
+            self.last_ee_pos = self.ee_pos
+            ee_cmd = self.motor.ee_set_pos(self.ee_pos)
+            self.can_publisher.publish(ee_cmd)
+        if (joy_msg.buttons[0] == 1):
+            self.can_publisher.publish(self.motor.ee_laser()) # laser with btn X
+
+        if (joy_msg.buttons[10] == 1):
+             self.can_publisher.publish(self.motor.clr_faults()) # clear faults with PS
+
         self.pos_current = self.ik_solver.desolve(self.current_joints)
+
+
 
         # if (joy_msg.buttons[0] == 1):
         #     if (self.mode == 1):
@@ -102,6 +121,8 @@ class Controller(Node):
         elif can_rx_msg.data[0] == 0xAE:
             motor_stat = self.motor.read_status_2(can_rx_msg)
             self.stat_publisher_2.publish(motor_stat)
+       # if can_rx_msg.id == 0x107:
+            
 
     def stat_timer_callback(self):
         stat_msg1 = Frame()
