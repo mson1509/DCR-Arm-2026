@@ -71,6 +71,20 @@ class Motor:
         msg.data[4] = b[3]
         return msg
 
+    def send_status_1(self):
+        stat_msg1 = Frame()
+        stat_msg1.id = 0xFF
+        stat_msg1.dlc = 0x01
+        stat_msg1.data[0] = 0xA4
+        return stat_msg1
+
+    def send_status_2(self):
+        stat_msg2 = Frame()
+        stat_msg2.id = 0xFF
+        stat_msg2.dlc = 0x01
+        stat_msg2.data[0] = 0xAE
+        return stat_msg2
+
     def read_status_1(self, can_stat):
         stat = MotorStat1()
         stat.id = int(can_stat.id)
