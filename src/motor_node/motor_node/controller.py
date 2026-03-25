@@ -42,12 +42,12 @@ class Controller(Node):
         self.last_laser_button = False
 
         self.joint_limits = [
-            {"min": -180.0, "max": 180.0},  # Joint 1
-            {"min":  0, "max":  180.0},  # Joint 2
-            {"min": 0, "max": 270.0},  # Joint 3
-            {"min":  -90.0, "max":  90.0},  # Joint 4
-            {"min": -90.0, "max": 90.0},  # Joint 5
-            {"min":  -180.0, "max":  180.0},  # Joint 6
+            {"min": -185.0, "max": 185.0},  # Joint 1
+            {"min": -5, "max":  185.0},  # Joint 2
+            {"min": -5, "max": 275.0},  # Joint 3
+            {"min":  -95.0, "max":  185.0},  # Joint 4
+            {"min": -5, "max": 215.0},  # Joint 5
+            {"min":  -185.0, "max":  185.0},  # Joint 6
         ]
         #self.motor_move_publisher = self.create_publisher(MotorMove, '/motor_move', 15)
         #self.motor_stat1_subscriber = self.create_subscription(MotorStat1, 'motor_stat_1', self.motor_stat1_callback, 50)
@@ -152,7 +152,7 @@ class Controller(Node):
         if (estop.data):
             if (self.mode == 1):
                 self.mode = 0
-                self.get_logger().info("Lost comms, switching to FK mode")
+                self.get_logger().warn("Lost comms, switching to FK mode")
             for i in range(6):
                 can_cmd = self.motor.speed_control(i + 1, 0)
                 self.can_publisher.publish(can_cmd)
@@ -173,12 +173,17 @@ class Controller(Node):
             motor_stat = self.motor.read_status_1(can_rx_msg)
             #if (motor_stat.id < 4):
             if 1 <= motor_stat.id <= 6:
-                self.current_joints[motor_stat.id - 1] = motor_stat.angle
+                self.current_joints[motor_stat.id - 1] = self.to_signed_angle(motor_stat.angle)
             self.stat_publisher_1.publish(motor_stat)
         elif can_rx_msg.data[0] == 0xAE:
             motor_stat = self.motor.read_status_2(can_rx_msg)
             self.stat_publisher_2.publish(motor_stat)
        # if can_rx_msg.id == 0x107:
+
+    def to_signed_angle(self, angle):
+        if angle > 180.0:
+            angle -= 360.0
+        return angle
             
 
     def stat_timer_callback(self):
