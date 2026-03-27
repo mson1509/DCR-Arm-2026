@@ -66,8 +66,8 @@
     <joint name="yaw_joint" type="revolute">
         <parent link="arm2"/>
         <child link="yaw"/>
-        <origin xyz="0 -0.05 0.6" rpy="0 0 0" />
-        <axis xyz="0 1 0"/>
+        <origin xyz="0 0.05 0.6" rpy="0 0 0" />
+        <axis xyz="0 -1 0"/>
         <limit lower="-1.6581" upper="3.2288" effort="100" velocity="1.0"/>
     </joint>
 
@@ -84,7 +84,7 @@
     <joint name="pitch_joint" type="revolute">
         <parent link="yaw"/>
         <child link="pitch"/>
-        <origin xyz="-0.05 -0.05 0" rpy="0 0 0" />
+        <origin xyz="-0.05 0.05 0" rpy="0 0 0" />
         <axis xyz="1 0 0"/>
         <limit lower="-0.0873" upper="4.7997" effort="100" velocity="1.0"/>
     </joint>
@@ -102,7 +102,7 @@
     <joint name="roll_joint" type="revolute">
         <parent link="pitch"/>
         <child link="roll"/>
-        <origin xyz="0 0 0.075" rpy="0 0 0" />
+        <origin xyz="0 0 -0.075" rpy="0 0 0" />
         <axis xyz="0 0 1"/>
         <limit lower="-3.2288" upper="3.2288" effort="100" velocity="1.0"/>
     </joint>
@@ -119,12 +119,12 @@
     <joint name="ee_joint" type="fixed">
         <parent link="roll"/>
         <child link="ee_link"/>
-        <origin xyz="0 0 0.05" rpy="0 0 0"/>
+        <origin xyz="0 0 -0.1" rpy="0 0 0"/>
     </joint>
 
     <link name="ee_link">
         <visual>
-            <origin xyz="0 0 0.05" rpy="0 0 0" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
                 <box size="0.1 0.1 0.15" />
             </geometry>
